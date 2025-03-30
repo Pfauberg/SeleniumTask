@@ -3,6 +3,8 @@ from selenium import webdriver
 from selenium.webdriver.common.by import By
 from selenium.webdriver.chrome.service import Service
 from selenium.webdriver.chrome.options import Options
+from selenium.webdriver.support.ui import WebDriverWait
+from selenium.webdriver.support import expected_conditions as EC
 
 BROWSER_PATH = r"C:\Program Files\BraveSoftware\Brave-Browser\Application\brave.exe"
 CHROMEDRIVER_PATH = r"C:\Program Files\chromedriver-win64\chromedriver.exe"
@@ -57,3 +59,17 @@ def test_language_switch_de_displayed(driver):
     de = driver.find_element(By.LINK_TEXT, "de")
     assert de.is_displayed(), "❌ Переключатель языка 'de' не отображается"
     print("✅ Переключатель языка 'de' отображается")
+
+def test_phone_icon_click_opens_popup(driver):
+    phone_icon_img = driver.find_element(By.CSS_SELECTOR, 'a[href="#popup:form-tr3"] img')
+    driver.execute_script("arguments[0].click();", phone_icon_img)
+
+    wait = WebDriverWait(driver, 10)
+    popup_text = wait.until(
+        EC.visibility_of_element_located(
+            (By.XPATH, "//*[contains(text(), 'Если вы не дозвонились')]")
+        )
+    )
+
+    assert popup_text.is_displayed(), "❌ Текст 'Если вы не дозвонились...' не отображается"
+    print("✅ Текст 'Если вы не дозвонились...' отображается")
